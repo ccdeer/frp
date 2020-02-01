@@ -13,8 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/fatedier/frp/client"
-	frpNet "github.com/fatedier/frp/utils/net"
+	"github.com/ccdeer/frp/client"
+	frpNet "github.com/ccdeer/frp/utils/net"
 )
 
 func GetProxyStatus(statusAddr string, user string, passwd string, name string) (status *client.ProxyStatusResp, err error) {

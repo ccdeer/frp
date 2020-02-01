@@ -18,8 +18,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/fatedier/frp/models/config"
-	"github.com/fatedier/frp/utils/log"
+	"github.com/ccdeer/frp/models/config"
+	"github.com/ccdeer/frp/utils/log"
 )
 
 type VisitorManager struct {
@@ -29,6 +29,7 @@ type VisitorManager struct {
 	visitors map[string]Visitor
 
 	checkInterval time.Duration
+	stop          chan bool
 
 	mu sync.Mutex
 }
@@ -39,21 +40,26 @@ func NewVisitorManager(ctl *Control) *VisitorManager {
 		cfgs:          make(map[string]config.VisitorConf),
 		visitors:      make(map[string]Visitor),
 		checkInterval: 10 * time.Second,
+		stop:          make(chan bool),
 	}
 }
 
 func (vm *VisitorManager) Run() {
 	for {
-		time.Sleep(vm.checkInterval)
-		vm.mu.Lock()
-		for _, cfg := range vm.cfgs {
-			name := cfg.GetBaseInfo().ProxyName
-			if _, exist := vm.visitors[name]; !exist {
-				log.Info("try to start visitor [%s]", name)
-				vm.startVisitor(cfg)
+		select {
+		case <-vm.stop:
+			return
+		case <-time.After(vm.checkInterval):
+			vm.mu.Lock()
+			for _, cfg := range vm.cfgs {
+				name := cfg.GetBaseInfo().ProxyName
+				if _, exist := vm.visitors[name]; !exist {
+					log.Info("try to start visitor [%s]", name)
+					vm.startVisitor(cfg)
+				}
 			}
+			vm.mu.Unlock()
 		}
-		vm.mu.Unlock()
 	}
 }
 
@@ -115,6 +121,7 @@ func (vm *VisitorManager) Reload(cfgs map[string]config.VisitorConf) {
 }
 
 func (vm *VisitorManager) Close() {
+	close(vm.stop)
 	vm.mu.Lock()
 	defer vm.mu.Unlock()
 	for _, v := range vm.visitors {

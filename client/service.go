@@ -23,14 +23,14 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/fatedier/frp/assets"
-	"github.com/fatedier/frp/g"
-	"github.com/fatedier/frp/models/config"
-	"github.com/fatedier/frp/models/msg"
-	"github.com/fatedier/frp/utils/log"
-	frpNet "github.com/fatedier/frp/utils/net"
-	"github.com/fatedier/frp/utils/util"
-	"github.com/fatedier/frp/utils/version"
+	"github.com/ccdeer/frp/assets"
+	"github.com/ccdeer/frp/g"
+	"github.com/ccdeer/frp/models/config"
+	"github.com/ccdeer/frp/models/msg"
+	"github.com/ccdeer/frp/utils/log"
+	frpNet "github.com/ccdeer/frp/utils/net"
+	"github.com/ccdeer/frp/utils/util"
+	"github.com/ccdeer/frp/utils/version"
 
 	fmux "github.com/hashicorp/yamux"
 )
